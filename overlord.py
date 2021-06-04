@@ -2,6 +2,13 @@ import time
 import sys
 import pygame
 
+#метод - функция, созданная в классе
+#обект
+#функции
+
+
+
+
 inventory = []
 money = {"бронзовые":23, "серебряные":12}
 
@@ -11,6 +18,7 @@ strength = 1 # Максимум - 500. Дополнение ♾️
 defence = 1 # Максимум - 196. Дополнение ♾️
 
 
+# Создаём функцию викторины
 def hokage_quiz():
     print5000('Вы слышите голос.\nОн говорит:')
     print5000('Имя седьмого хокаге')
@@ -32,6 +40,7 @@ def hokage_quiz():
     return False
 
 
+# Создаём функцию супер принта
 def print5000(sentence):
     print(sentence)
     input()
