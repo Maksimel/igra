@@ -2,20 +2,40 @@ import time
 import sys
 import pygame
 
-#метод - функция, созданная в классе
-#обект
-#функции
+
+class Fighter:  # Боец
+    def __init__(self, hp, stamina, strength, defence, dmg):
+        self.hp = hp    # Максимум - 1000.
+        self.dmg = dmg  # Максимум - 100000
+        self.stamina = stamina  # Максимум - 100.
+        self.strength = strength    # Максимум - 10000.
+        self.defence = defence  # Максимум - 1000.
+
+    def calculate_dmg(self):
+        pass
+
+    def attack(self, target):   # target - цель, противник
+        current_dmg = self.calculate_dmg()
+        target.hp -= current_dmg
+        print(target.hp)
 
 
+class Player(Fighter):
+    def __init__(self, hp, stamina, strength, defence, dmg):
+        Fighter.__init__(self, hp, stamina, strength, defence, dmg)
+        self.inventory = []
+        self.money = {"бронзовые":23, "серебряные":12}
+
+    def calculate_dmg(self):
+        current_dmg = self.dmg
+        if 'Murasame' in self.inventory:
+            current_dmg += 100
+        return current_dmg
 
 
-inventory = []
-money = {"бронзовые":23, "серебряные":12}
-
-hp = 100 # Максимум - 286. Дополнение ♾️
-stamina = 3 # Максимум - 86. Дополнение ♾️
-strength = 1 # Максимум - 500. Дополнение ♾️
-defence = 1 # Максимум - 196. Дополнение ♾️
+class Mob(Fighter):
+    def calculate_dmg(self):
+        return self.dmg
 
 
 # Создаём функцию викторины
@@ -56,12 +76,14 @@ minecraft_music.play()
 
 dattebae = pygame.mixer.Sound('music/даттебаё.mp3')
 yare_yare_daze = pygame.mixer.Sound('music/yare-yare-daze.mp3')
+
+player = Player(100, 3, 1, 1, 5)
+
 # name = input('Добро пожаловать, странник. Как твоё имя?\n')
 # print5000('Ты попал в мир под названием...')
 # time.sleep(2)
 # world_name = input('Как же он назывался... ')
 # print5000('Точно,', world_name)
-
 print5000('Вы проснулись посреди леса.')
 print5000('Вы не знаете где вы, но помните своё имя.')
 print5000('Вы встаёте и видите 1) горы и 2) город')
@@ -118,6 +140,8 @@ if choice == 2:
         print5000('На вас напали РАЗБИЙНИКИ. ')
         print5000('GAME OVER')
         sys.exit()
+
+
 time.sleep(2)
 
 print5000('Глава 2. Город.')
@@ -157,4 +181,10 @@ print5000('*Я отвечаю* да это я')
 print5000('Мы познакомились, и пришёл торговец.')
 print5000('Мы отправились в путь.')
 print5000('Вы идёте по равнине')
-print5000('На вас напал Слайм!')
+print5000('На вас напали!')
+slime = Mob(50, 5, 2, 1, 5)
+print5000('На вас напал слайм!')
+print5000(f'HP: {slime.hp}')
+# player.attack(goblin)
+# goblin.attack(player)
+#вывести защиту слайма, атаку и защиту игрока
