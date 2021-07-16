@@ -5,26 +5,41 @@ import random
 
 
 class Fighter:  # Боец
-    def __init__(self, name, hp, stamina, strength, defence, dmg):
+    def __init__(self, name, hp, stamina, dmg):
         self.name = name
         self.hp = hp    # Максимум - 1000.
         self.dmg = dmg  # Максимум - 100000
         self.stamina = stamina  # Максимум - 100.
-        self.strength = strength    # Максимум - 10000.
-        self.defence = defence  # Максимум - 1000.
+        self.dmg_blocked = False
 
-    def calculate_dmg(self):
-        pass
-
-    def attack(self, target):   # target - цель, противник
+    def attack(self, target, ultimate=False):   # target - цель, противник
         current_dmg = self.calculate_dmg()
-        target.hp -= current_dmg
-        print(f'{target.name} HP: {target.hp}')
+        if self.dmg_blocked == True:
+            current_dmg //= 2
+            self.dmg_blocked = False
+
+        if self.stamina > 0:
+            if ultimate == True:
+                target.hp -= current_dmg * 7
+                print5000('ORA ORA ORA!')
+                ora.play()
+                self.stamina -= 7
+            else:
+                target.hp -= current_dmg
+                self.stamina -= 2
+            self.stamina += 1
+            print(f'{target.name} HP: {target.hp}')
+        else:
+            print('Вы выдохлись. У вас не хватает выносливости, чтобы атаковать.')
+
+    def block(self, target):
+        target.dmg_blocked = True
+        print5000('Урон противника уменьшен.')
 
 
 class Player(Fighter):
-    def __init__(self, name, hp, stamina, strength, defence, dmg):
-        Fighter.__init__(self, name, hp, stamina, strength, defence, dmg)
+    def __init__(self, name, hp, stamina, dmg):
+        Fighter.__init__(self, name, hp, stamina, dmg)
         self.inventory = []
         self.money = {"бронзовые":23, "серебряные":12}
 
@@ -32,12 +47,15 @@ class Player(Fighter):
         current_dmg = self.dmg
         if 'Murasame' in self.inventory:
             current_dmg += 100
+        current_dmg += random.randint(-20, 20)
         return current_dmg
 
 
 class Mob(Fighter):
     def calculate_dmg(self):
-        return self.dmg
+        current_dmg = self.dmg
+        current_dmg += random.randint(-20, 20)
+        return current_dmg
 
 
 # Создаём функцию викторины
@@ -78,8 +96,9 @@ minecraft_music.play()
 
 dattebae = pygame.mixer.Sound('music/даттебаё.mp3')
 yare_yare_daze = pygame.mixer.Sound('music/yare-yare-daze.mp3')
+ora = pygame.mixer.Sound('music/ora.mp3')
 
-player = Player('Вася', 100, 3, 1, 1, 5)
+player = Player('Вася', 100, 3, 32)
 def story_before_battle():
     name = input('Добро пожаловать, странник. Как твоё имя?\n')
     print5000('Ты попал в мир под названием...')
@@ -167,37 +186,55 @@ def story_before_battle():
     print5000('*Я подписываю документы и отдаю их незнакомцу*')
     print5000('Незнакомец: Отлично, теперь ты официально член гильдии.')
     print5000('*Я спрашиваю незнакомца как тебя зовут?*')
-    print5000('Незнакомец: Зовут меня Альберт будем знакомы!')
-    print5000('Альберт: *протягивает вам руку*')
+    print5000('Незнакомец: Зовут меня Ахмед будем знакомы!')
+    print5000('Ахмед: *протягивает вам руку*')
     print5000('*Я пожал руку*')
-    print5000('Альберт: Хорошо, сначала начнём с лёгкой мисии.')
-    print5000('Адьберт: Ты готов?')
+    print5000('Ахмед: Хорошо, сначала начнём с лёгкой мисии.')
+    print5000('Ахмед: Ты готов?')
     print5000('Да готов.')
-    print5000('Альберт: Так первая мисия, сопроводить торговца в страну "Волн"')
-    print5000('Альберт: С тобой пойдут ещё 3 человека. Торговец придёт через 1 час.')
-    print5000('Альберт: Остальные уже здесь.')
-    print5000('*Из двери выходят 3 человека и говорят мы пришли*')
-    print5000('*Они заметили меня и спросили* о это ты тот новенький?')
-    print5000('*Я отвечаю* да это я')
-    print5000('Мы познакомились, и пришёл торговец.')
+    print5000('Ахмед: Так первая мисия, сопроводить торговца в страну "Волн"')
+    print5000('Ахмед: Торговец придёт через 1 час.')
+    print5000('Пришёл торговец.')
     print5000('Мы отправились в путь.')
     print5000('Вы идёте по равнине')
     print5000('На вас напали!')
 
-mob = Mob('Слайм', 50, 5, 2, 1, 5)
-print5000('На вас напал слайм!')
-print5000(f'HP: {mob.hp}')
-print5000('-----------')
-print5000(f'Ваше HP: {player.hp}')
-while 1 > 0:
-    battle = input('1)Атаковать  2)Убежать   ')
-    if battle != '1' and battle != '2':
-        continue    # Начинаем цикл заново
+def battle(mob):
+    print5000('На вас напали!')
+    print5000(f'Противник: {mob.name}')
+    print5000(f'HP: {mob.hp}')
+    print5000('-----------')
+    print5000(f'Ваше HP: {player.hp}')
+    while True:
+        battle = input('1) Бой 2) Посмотреть инвентарь 3) Убежать ')
+        if battle != '1' and battle != '2' and battle != '3':
+            continue    # Начинаем цикл заново
 
-    battle = int(battle)
-    if battle == 1:
-        player.attack(mob)
-        mob.attack(player)
-    if battle == 2:
-        print5000('Вы успешно убежали')
-        break   # Вырубаем цикл
+        battle = int(battle)
+        if battle == 1:
+            punch = input('1) Aтака 2) ORA ORA ORA 3) Защита ')
+            if punch == '1':
+                player.attack(mob)
+            if punch == '2':
+                player.attack(mob, ultimate=True)
+            if punch == '3':
+                player.block(mob)
+            mob.attack(player)
+        if battle == 2:
+            print5000(player.inventory)
+        if battle == 3:
+            print5000('Вы успешно убежали')
+            break   # Вырубаем цикл
+        if player.hp <= 0:
+            print5000('Поражение')
+            sys.exit()
+        if mob.hp <= 0:
+            print5000('Бой окончен')
+            print5000(f'Вы успешно отбились от противника {mob.name}')
+            break
+
+mob = Mob(name='Слайм', hp=50, stamina=5, dmg=20)
+battle(mob)
+print5000('Я с торговцем иду по тропе и на встречу нам выбегают разбойники')
+mob = Mob(name='Разбийник', hp=100, stamina=5, dmg=32)
+battle(mob)
