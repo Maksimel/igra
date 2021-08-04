@@ -1,5 +1,5 @@
-import time
 import sys
+import time
 import pygame
 import random
 
@@ -83,22 +83,9 @@ def hokage_quiz():
 # Создаём функцию супер принта
 def print5000(sentence):
     print(sentence, end='')
-    input()
+    input("|")
 
 
-pygame.mixer.init()
-# Создаём аудиофайл
-minecraft_music = pygame.mixer.Sound('music/1.mp3')
-# Устанавливаем громкость
-minecraft_music.set_volume(0.1)
-# Запускаем
-minecraft_music.play()
-
-dattebae = pygame.mixer.Sound('music/даттебаё.mp3')
-yare_yare_daze = pygame.mixer.Sound('music/yare-yare-daze.mp3')
-ora = pygame.mixer.Sound('music/ora.mp3')
-
-player = Player('Вася', 100, 3, 32)
 def story_before_battle():
     name = input('Добро пожаловать, странник. Как твоё имя?\n')
     print5000('Ты попал в мир под названием...')
@@ -199,6 +186,37 @@ def story_before_battle():
     print5000('Вы идёте по равнине')
     print5000('На вас напали!')
 
+
+def level_up():
+    bonus_hp = random.randint(1, 3)
+    bonus_stamina = random.randint(1, 3)
+    bonus_bronze = random.randint(10, 20)
+    bonus_silver = random.randint(5, 10)
+    player.stamina += bonus_stamina
+    player.hp += bonus_hp
+    player.money['бронзовые'] += bonus_bronze
+    player.money['серебряные'] += bonus_silver
+    print5000(f"Здоровье + {bonus_hp}")
+    print5000(f"Выносливость + {bonus_stamina}")
+    print5000(f"Бронзовые монеты + {bonus_bronze}")
+    print5000(f"Серебряные монеты + {bonus_silver}")
+
+
+def level_bossup():
+    bonus_hp = random.randint(5, 7)
+    bonus_stamina = random.randint(5, 7)
+    bonus_bronze = random.randint(20, 40)
+    bonus_silver = random.randint(10, 20)
+    player.stamina += bonus_stamina
+    player.hp += bonus_hp
+    player.money['бронзовые'] += bonus_bronze
+    player.money['серебряные'] += bonus_silver
+    print5000(f"Здоровье + {bonus_hp}")
+    print5000(f"Выносливость + {bonus_stamina}")
+    print5000(f"Бронзовые монеты + {bonus_bronze}")
+    print5000(f"Серебряные монеты + {bonus_silver}")
+
+
 def battle(mob):
     print5000('На вас напали!')
     print5000(f'Противник: {mob.name}')
@@ -223,6 +241,9 @@ def battle(mob):
         if battle == 2:
             print5000(player.inventory)
         if battle == 3:
+            if mob.name == 'Лодочник':
+                print5000('Вы не можете убежать')
+                continue
             print5000('Вы успешно убежали')
             break   # Вырубаем цикл
         if player.hp <= 0:
@@ -231,10 +252,59 @@ def battle(mob):
         if mob.hp <= 0:
             print5000('Бой окончен')
             print5000(f'Вы успешно отбились от противника {mob.name}')
+            if mob.name == 'Лодочник':
+                level_bossup()
+            else:
+                level_up()
             break
 
+
+pygame.mixer.init()
+# Создаём аудиофайл
+minecraft_music = pygame.mixer.Sound('music/1.mp3')
+# Устанавливаем громкость
+minecraft_music.set_volume(0.1)
+# Запускаем
+minecraft_music.play()
+naruto_music = pygame.mixer.Sound('music/naruto.mp3')
+naruto_music.set_volume(0.1)
+
+dattebae = pygame.mixer.Sound('music/даттебаё.mp3')
+yare_yare_daze = pygame.mixer.Sound('music/yare-yare-daze.mp3')
+ora = pygame.mixer.Sound('music/ora.mp3')
+
+story_before_battle()
+player = Player('Вася', 100, 3, 32)
 mob = Mob(name='Слайм', hp=50, stamina=5, dmg=20)
 battle(mob)
 print5000('Я с торговцем иду по тропе и на встречу нам выбегают разбойники')
 mob = Mob(name='Разбийник', hp=100, stamina=5, dmg=32)
 battle(mob)
+
+print5000('Я пошёл дальше c торговцем. По пути нам встречались Пикачу, люди, хокаге.')
+print5000('Спустя 1 день мы дошли до реки которую мы должны переплыть')
+print5000('Мы встретили лодочника который готов перевезти нас за 10 серебряных')
+print5000('Лодочник: так гоните 10 сереб и я вас перевезу, либо идите вон')
+
+while True:
+    choice = input('1) заплатить или 2) изыйди ')
+    if choice != '1' and choice != '2':
+        continue    # Начинаем цикл заново
+    choice = int(choice)
+    if choice == 1:
+        print5000('Продолжение следует...')
+    if choice == 2:
+        print5000('Я подошёл к лодочнику и стал ему угрожать: попрощайся с жизнью')
+        print5000('И вдруг лодочник замахнулся и достал меч')
+        print5000('Лодочник: видимо ты давно не получал')
+        mob = Mob(name='Лодочник', hp=150, stamina=20, dmg=50)
+        battle(mob)
+
+        print5000('Я смог победить этого лодочника')
+        print5000('Вы ушли в закат')
+        print5000('Продолжение следует...')
+        break
+
+minecraft_music.stop()
+naruto_music.play()
+time.sleep(naruto_music.get_length())
